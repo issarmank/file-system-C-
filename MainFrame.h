@@ -18,7 +18,7 @@ private:
     bool isCutOp;
 
     void UpdateFileList(const std::filesystem::path& directory);
-    void OnOpen(wxCommandEvent& event);
+    void OnOpen(wxListEvent& event);
     void OnCopy(wxCommandEvent& event);
     void OnPaste(wxCommandEvent& event);
     void OnDelete(wxCommandEvent& event);
