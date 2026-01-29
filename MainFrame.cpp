@@ -231,6 +231,22 @@ void MainFrame::OnCopy(wxCommandEvent& event)
     SetStatusText("Copied to clipboard: " + clipboardSource.filename().string());
 }
 
+void MainFrame::OnCut(wxCommandEvent& event)
+{
+    wxString name;
+    if (!GetSelectedName(fileList, name))
+    {
+        wxMessageBox("Select a file or folder first.", "Cut", wxOK | wxICON_INFORMATION, this);
+        return;
+    }
+
+    const std::filesystem::path cwd = std::filesystem::path(std::string(textBar->GetValue().mb_str()));
+    clipboardSource = cwd / std::string(name.mb_str());
+    isCutOp = true;
+
+    SetStatusText("Cut to clipboard: " + clipboardSource.filename().string());
+}
+
 void MainFrame::OnPaste(wxCommandEvent& event)
 {
     if (clipboardSource.empty())
@@ -331,6 +347,76 @@ void MainFrame::OnDelete(wxCommandEvent& event)
 
     SetStatusText("Deleted: " + target.filename().string());
     UpdateFileList(cwd);
+}
+
+void MainFrame::OnNewFolder(wxCommandEvent& event)
+{
+    const std::filesystem::path cwd = std::filesystem::path(std::string(textBar->GetValue().mb_str()));
+
+    wxTextEntryDialog dlg(this, "Enter new folder name:", "New Folder");
+    if (dlg.ShowModal() != wxID_OK) return;
+
+    const wxString folderNameWx = dlg.GetValue();
+    if (folderNameWx.IsEmpty()) return;
+
+    const std::filesystem::path newDir = cwd / std::string(folderNameWx.mb_str());
+
+    std::error_code ec;
+    if (!std::filesystem::create_directory(newDir, ec) || ec)
+    {
+        wxMessageBox("Could not create directory.", "Error", wxOK | wxICON_ERROR, this);
+        return;
+    }
+
+    SetStatusText("Created folder: " + newDir.filename().string());
+    UpdateFileList(cwd);
+}
+
+void MainFrame::OnRename(wxCommandEvent& event)
+{
+    wxString oldNameWx;
+    if (!GetSelectedName(fileList, oldNameWx))
+    {
+        wxMessageBox("Select a file or folder first.", "Rename", wxOK | wxICON_INFORMATION, this);
+        return;
+    }
+
+    const std::filesystem::path cwd = std::filesystem::path(std::string(textBar->GetValue().mb_str()));
+    const std::filesystem::path oldPath = cwd / std::string(oldNameWx.mb_str());
+
+    wxTextEntryDialog dlg(this, "Enter new name:", "Rename", oldNameWx);
+    if (dlg.ShowModal() != wxID_OK) return;
+
+    const wxString newNameWx = dlg.GetValue();
+    if (newNameWx.IsEmpty() || newNameWx == oldNameWx) return;
+
+    const std::filesystem::path newPath = cwd / std::string(newNameWx.mb_str());
+
+    std::error_code ec;
+    std::filesystem::rename(oldPath, newPath, ec);
+    if (ec)
+    {
+        wxMessageBox("Rename failed.", "Error", wxOK | wxICON_ERROR, this);
+        return;
+    }
+
+    SetStatusText("Renamed to: " + newPath.filename().string());
+    UpdateFileList(cwd);
+}
+
+void MainFrame::OnPathEnter(wxCommandEvent& event)
+{
+    const std::filesystem::path dir = std::filesystem::path(std::string(textBar->GetValue().mb_str()));
+
+    std::error_code ec;
+    if (!std::filesystem::exists(dir, ec) || !std::filesystem::is_directory(dir, ec))
+    {
+        wxMessageBox("Path is not a directory.", "Error", wxOK | wxICON_ERROR, this);
+        return;
+    }
+
+    UpdateFileList(dir);
+    SetStatusText("Browsing: " + dir.string());
 }
 
 void MainFrame::OnRefresh(wxCommandEvent& event)
