@@ -23,6 +23,7 @@ private:
     void OnPaste(wxCommandEvent& event);
     void OnDelete(wxCommandEvent& event);
     void OnRefresh(wxCommandEvent& event);
+    void OnExit(wxCommandEvent& event);
 
     wxDECLARE_EVENT_TABLE();
 };
