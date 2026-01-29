@@ -15,7 +15,8 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_COPY, MainFrame::OnCopy)
     EVT_MENU(ID_PASTE, MainFrame::OnPaste)
     EVT_MENU(wxID_DELETE, MainFrame::OnDelete) // Using standard wxID
-    EVT_MENU(wxID_EXIT, MainFrame::OnExit) // ADD
+    EVT_MENU(wxID_EXIT, MainFrame::OnExit)
+    EVT_MENU(ID_EXIT, MainFrame::OnExit)
     EVT_LIST_ITEM_ACTIVATED(wxID_ANY, MainFrame::OnOpen) // Double-click
 wxEND_EVENT_TABLE()
 
@@ -52,7 +53,9 @@ MainFrame::MainFrame(const wxString& title)
     menuFile->Append(ID_PASTE, "&Paste\tCtrl-V");
     menuFile->Append(wxID_DELETE, "&Delete\tDel");
     menuFile->AppendSeparator();
-    menuFile->Append(wxID_EXIT, "E&xit\tCtrl-Q");
+    menuFile->Append(ID_EXIT, "&Quit\tCtrl-Q");
+    menuFile->Append(wxID_EXIT, "Quit &FileManager\tCtrl-Q");
+
 
     wxMenuBar* menuBar = new wxMenuBar;
     menuBar->Append(menuFile, "&File");

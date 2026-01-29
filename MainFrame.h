@@ -33,7 +33,8 @@ enum
     ID_COPY = wxID_HIGHEST + 1,
     ID_PASTE,
     ID_DELETE,
-    ID_REFRESH
+    ID_REFRESH,
+    ID_EXIT
 };
 
 #endif
