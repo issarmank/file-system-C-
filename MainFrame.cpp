@@ -13,11 +13,15 @@
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_REFRESH, MainFrame::OnRefresh)
     EVT_MENU(ID_COPY, MainFrame::OnCopy)
+    EVT_MENU(ID_CUT, MainFrame::OnCut)
     EVT_MENU(ID_PASTE, MainFrame::OnPaste)
-    EVT_MENU(wxID_DELETE, MainFrame::OnDelete) // Using standard wxID
+    EVT_MENU(ID_NEW_FOLDER, MainFrame::OnNewFolder)
+    EVT_MENU(ID_RENAME, MainFrame::OnRename)
+    EVT_MENU(wxID_DELETE, MainFrame::OnDelete)
     EVT_MENU(wxID_EXIT, MainFrame::OnExit)
     EVT_MENU(ID_EXIT, MainFrame::OnExit)
-    EVT_LIST_ITEM_ACTIVATED(wxID_ANY, MainFrame::OnOpen) // Double-click
+    EVT_TEXT_ENTER(wxID_ANY, MainFrame::OnPathEnter)
+    EVT_LIST_ITEM_ACTIVATED(wxID_ANY, MainFrame::OnOpen)
 wxEND_EVENT_TABLE()
 
 MainFrame::MainFrame(const wxString& title)
@@ -29,7 +33,7 @@ MainFrame::MainFrame(const wxString& title)
 
     // 2. Create UI Components
     wxPanel* panel = new wxPanel(this);
-    textBar = new wxTextCtrl(panel, wxID_ANY, wxGetCwd()); // Start at current path
+    textBar = new wxTextCtrl(panel, wxID_ANY, wxGetCwd(), wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER);
     fileList = new wxListCtrl(panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
 
     // Add columns to the file list as required
@@ -47,15 +51,18 @@ MainFrame::MainFrame(const wxString& title)
 
     // 4. Create the Menu Bar
     wxMenu* menuFile = new wxMenu;
+    menuFile->Append(ID_NEW_FOLDER, "&New...\tCtrl-N");
     menuFile->Append(ID_REFRESH, "&Refresh\tCtrl-R");
     menuFile->AppendSeparator();
+    menuFile->Append(ID_RENAME, "Re&name...\tCtrl-E");
+    menuFile->Append(wxID_DELETE, "&Delete...\tDel");
+    menuFile->AppendSeparator();
     menuFile->Append(ID_COPY, "&Copy\tCtrl-C");
+    menuFile->Append(ID_CUT, "Cu&t\tCtrl-X");
     menuFile->Append(ID_PASTE, "&Paste\tCtrl-V");
-    menuFile->Append(wxID_DELETE, "&Delete\tDel");
     menuFile->AppendSeparator();
     menuFile->Append(ID_EXIT, "&Quit\tCtrl-Q");
     menuFile->Append(wxID_EXIT, "Quit &FileManager\tCtrl-Q");
-
 
     wxMenuBar* menuBar = new wxMenuBar;
     menuBar->Append(menuFile, "&File");
