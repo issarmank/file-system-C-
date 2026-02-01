@@ -43,3 +43,10 @@ Install wxWidgets via Homebrew:
 
 ````bash
 brew install wxwidgets
+
+make
+./filemanager
+make clean
+
+
+
